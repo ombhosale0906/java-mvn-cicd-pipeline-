@@ -25,7 +25,7 @@ pipeline {
         stage('3. Unit Test') {
             steps {
                 echo 'Running unit tests...'
-                sh 'mvn test'
+                bat 'mvn test'
             }
             post {
                 always {
@@ -37,17 +37,19 @@ pipeline {
         stage('4. Package') {
             steps {
                 echo 'Packaging application into JAR/WAR...'
-                sh 'mvn package -DskipTests'
+                bat 'mvn package -DskipTests'
             }
         }
 
         stage('5. Deploy') {
             steps {
                 echo 'Deploying application artifact...'
-                sh '''
-                    echo "Deploying target file to destination server..."
-                    cp target/*.jar /tmp/deployed-app.jar || true
-                    echo "Deployment completed successfully."
+                bat '''
+                    echo Deploying target file to destination folder...
+                    if exist target\\*.jar (
+                        copy /Y target\\*.jar "%TEMP%\\deployed-app.jar"
+                    )
+                    echo Deployment completed.
                 '''
             }
         }
